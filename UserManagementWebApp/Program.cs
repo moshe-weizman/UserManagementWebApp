@@ -9,6 +9,7 @@ var configuration = builder.Configuration;
 var dbConnectionString = configuration.GetConnectionString("AppDbContext");
 
 builder.Services.AddTransient<IAppDbContextFactory, AppDbContextFactory>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConnectionString));
 

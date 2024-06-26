@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UserManagementWebApp.Data;
 using UserManagementWebApp.Models;
 
@@ -9,40 +11,34 @@ namespace UserManagementWebApp.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IAppDbContextFactory _appDbContextFactory;
+        private readonly IUserRepository _userRepository;
         private readonly IWebHostEnvironment _env;
 
-        public UsersController(IAppDbContextFactory appDbContextFactory, IWebHostEnvironment env)
+        public UsersController(IUserRepository userRepository, IWebHostEnvironment env)
         {
-            _appDbContextFactory = appDbContextFactory;
+            _userRepository = userRepository;
             _env = env;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            using (var db = _appDbContextFactory.CreateDbContext())
-            {
-                return await db.Users.ToListAsync();
-            }
+            var users = await _userRepository.GetUsersAsync();
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            using (var db = _appDbContextFactory.CreateDbContext())
+            var user = await _userRepository.GetUserAsync(id);
+
+            if (user == null)
             {
-                var user = await db.Users.FindAsync(id);
-
-                if (user == null)
-                {
-                    return NotFound();
-                }
-
-                return user;
+                return NotFound();
             }
-        }
 
+            return Ok(user);
+        }
 
         [HttpPost]
         public async Task<ActionResult<User>> PostUser([FromForm] UserDto formData)
@@ -63,16 +59,9 @@ namespace UserManagementWebApp.Controllers
                         Photo = photoPath
                     };
 
-                    using (var db = _appDbContextFactory.CreateDbContext())
-                    {
+                    var createdUser = await _userRepository.AddUserAsync(user);
 
-                        db.Users.Add(user);
-                        await db.SaveChangesAsync();
-
-                        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-                    }
-
-                   
+                    return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, createdUser);
                 }
                 catch (Exception ex)
                 {
@@ -90,7 +79,7 @@ namespace UserManagementWebApp.Controllers
         {
             // Generate unique file name
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
-            var filePath = Path.Combine("wwwroot", "uploads", fileName);
+            var filePath = Path.Combine(_env.WebRootPath, "uploads", fileName);
 
             // Save photo to wwwroot/uploads folder
             using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -100,7 +89,5 @@ namespace UserManagementWebApp.Controllers
 
             return "/uploads/" + fileName; // Return relative path to stored photo
         }
-
-       
     }
 }
