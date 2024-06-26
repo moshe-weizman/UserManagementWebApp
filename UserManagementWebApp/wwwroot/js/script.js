@@ -4,33 +4,51 @@
     $('#dob').attr('max', today);
 
     // Function to handle form submission
+    function checkUserNameExists(username, callback) {
+        $.ajax({
+            url: '/api/users/username/' + username,
+            type: 'GET',
+            success: function (exists) {
+                callback(exists);
+            }
+        });
+    }
+
+    // Form submission event handler
     $('#userForm').submit(function (event) {
         event.preventDefault(); // Prevent default form submission
 
-        // Serialize form data into FormData object
-        var formData = new FormData();
-        formData.append('username', $('#username').val());
-        formData.append('email', $('#email').val());
-        formData.append('dob', $('#dob').val());
-        formData.append('photo', $('#photo')[0].files[0]);
+        var username = $('#username').val();
 
-        // Ajax request to upload photo and save user data
-        $.ajax({
-            url: '/api/users', // Endpoint to handle data saving (replace with your ASP.NET Core endpoint)
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                // On success, clear the form fields
-                clearForm();
+        checkUserNameExists(username, function (exists) {
+            if (exists) {
+                alert('Username already exists.');
+            } else {
+                // Serialize form data into FormData object
+                var formData = new FormData();
+                formData.append('username', username);
+                formData.append('email', $('#email').val());
+                formData.append('dob', $('#dob').val());
+                formData.append('photo', $('#photo')[0].files[0]);
 
-                // Refresh the users list
-                getUsersList();
+                // Ajax request to upload photo and save user data
+                $.ajax({
+                    url: '/api/users',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        // On success, clear the form fields
+                        clearForm();
+
+                        // Refresh the users list
+                        getUsersList();
+                    }
+                });
             }
         });
     });
-
     // Function to clear the form fields
     function clearForm() {
         $('#username').val('');

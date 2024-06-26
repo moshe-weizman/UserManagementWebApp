@@ -8,8 +8,9 @@ namespace UserManagementWebApp.Data
     public interface IUserRepository
     {
         Task<IEnumerable<User>> GetUsersAsync();
-        Task<User?> GetUserAsync(int id);
+        Task<User> GetUserAsync(int id);
         Task<User> AddUserAsync(User user);
+        Task<bool> UserNameExistsAsync(string username); // Add this method
     }
     public class UserRepository : IUserRepository
     {
@@ -28,7 +29,7 @@ namespace UserManagementWebApp.Data
             }
         }
 
-        public async Task<User?> GetUserAsync(int id)
+        public async Task<User> GetUserAsync(int id)
         {
             using (var db = _appDbContextFactory.CreateDbContext())
             {
@@ -43,6 +44,14 @@ namespace UserManagementWebApp.Data
                 db.Users.Add(user);
                 await db.SaveChangesAsync();
                 return user;
+            }
+        }
+
+        public async Task<bool> UserNameExistsAsync(string username)
+        {
+            using (var db = _appDbContextFactory.CreateDbContext())
+            {
+                return await db.Users.AnyAsync(u => u.Username == username);
             }
         }
     }

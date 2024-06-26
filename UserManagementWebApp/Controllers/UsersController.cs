@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using UserManagementWebApp.Data;
 using UserManagementWebApp.Models;
@@ -47,6 +48,12 @@ namespace UserManagementWebApp.Controllers
             {
                 try
                 {
+                    // Check if username already exists
+                    if (await _userRepository.UserNameExistsAsync(formData.Username))
+                    {
+                        return Conflict("Username already exists.");
+                    }
+
                     // Save photo to the server
                     var photoPath = SavePhoto(formData.Photo);
 
@@ -73,6 +80,15 @@ namespace UserManagementWebApp.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+
+        [HttpGet("username/{username}")]
+        public async Task<ActionResult<bool>> CheckUserNameExists(string username)
+        {
+            var exists = await _userRepository.UserNameExistsAsync(username);
+            return Ok(exists);
+        }
+
 
         // Helper method to save photo to server
         private string SavePhoto(Microsoft.AspNetCore.Http.IFormFile photo)
