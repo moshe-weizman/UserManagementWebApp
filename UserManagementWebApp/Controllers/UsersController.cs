@@ -24,21 +24,36 @@ namespace UserManagementWebApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            var users = await _userRepository.GetUsersAsync();
-            return Ok(users);
+            try
+            {
+                var users = await _userRepository.GetUsersAsync();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _userRepository.GetUserAsync(id);
-
-            if (user == null)
+            try
             {
-                return NotFound();
+                var user = await _userRepository.GetUserAsync(id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
 
-            return Ok(user);
         }
 
         [HttpPost]
@@ -85,8 +100,15 @@ namespace UserManagementWebApp.Controllers
         [HttpGet("username/{username}")]
         public async Task<ActionResult<bool>> CheckUserNameExists(string username)
         {
-            var exists = await _userRepository.UserNameExistsAsync(username);
-            return Ok(exists);
+            try
+            {
+                var exists = await _userRepository.UserNameExistsAsync(username);
+                return Ok(exists);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
 

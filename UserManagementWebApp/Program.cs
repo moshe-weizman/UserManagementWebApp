@@ -13,7 +13,6 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConnectionString));
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 //builder.Services.AddControllers();

@@ -4,11 +4,7 @@ namespace UserManagementWebApp.Models
 {
     public class UserDto
     {
-        //public string Username { get; set; }
-        //public string Email { get; set; }
-        //public DateTime DateOfBirth { get; set; }
-        //public IFormFile Photo { get; set; }
-
+   
         public string Username { get; set; }
 
         [Required]
