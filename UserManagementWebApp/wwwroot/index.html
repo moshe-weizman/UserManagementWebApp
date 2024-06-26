@@ -1,0 +1,61 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        th, td {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <form id="userForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required><br><br>
+
+        <label for="photo">Photo:</label>
+        <input type="file" id="photo" name="photo" accept="image/*" required><br><br>
+
+        <img id="photo-preview" src="#" alt="Image Preview" style="display: none; max-width: 200px; max-height: 200px;"><br><br>
+
+        <button id="submitBtn" type="submit">Submit</button>
+        <button id="clearBtn" type="button">Clear</button>
+
+    </form>
+
+    <h2>Users List</h2>
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Date of Birth</th>
+                <th>Photo</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

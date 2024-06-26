@@ -1,0 +1,7 @@
+﻿CREATE TABLE Users (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(100) NOT NULL,
+    DateOfBirth DATE NOT NULL,
+    Photo NVARCHAR(MAX)
+);
